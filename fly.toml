@@ -1,19 +1,15 @@
-# fly.toml
+app = "zatbot"
 
-app = "zatbot"    # Asegúrate de usar el nombre de tu app en Fly.io
-
-[build]
-  # puedes dejarlo vacío
+# No necesitamos sección [build], Fly detectará el Dockerfile de forma automática.
 
 [[services]]
-  # Debe coincidir con el puerto de tu index.js (3000)
   internal_port = 3000
-  protocol     = "tcp"
+  protocol = "tcp"
 
   [[services.ports]]
     handlers = ["http"]
-    port     = 80
+    port = 80
 
   [[services.ports]]
     handlers = ["tls", "http"]
-    port     = 443
+    port = 443
