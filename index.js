@@ -44,11 +44,13 @@ app.get('/', (req, res) => {
 // 5) Endpoint /auth devuelve el QR, token y estado
 app.get('/auth', (req, res) => {
   res.json({
-    token:  TOKEN_ZAPBOT,
-    qr:     qrCodeData,
-    status: isReady ? 'connected' : 'qr'
+    token:    TOKEN_SIMULADO,
+    instance: INSTANCE_ID,
+    qr:       qrCodeData,
+    status:   isReady ? 'connected' : 'qr'
   });
 });
+
 
 // 6) Función que maneja envíos de mensajes
 async function handleSend(req, res) {
