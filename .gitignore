@@ -1,0 +1,52 @@
+# 📦 Node modules
+node_modules/
+
+# 💾 Archivos de entorno y claves privadas
+.env
+.env.local
+.env.*.local
+
+# ⚙️ Configuraciones del editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ⚙️ Archivos de sistema (Windows/macOS/Linux)
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 🏗 Archivos de build / distribución
+dist/
+build/
+out/
+.cache/
+coverage/
+
+# 🚫 Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🧪 Tests temporales
+*.test-results
+jest/
+cypress/screenshots/
+cypress/videos/
+
+# 💻 Sistema de control de procesos
+pids/
+*.pid
+*.seed
+
+# 🛠 Archivos de despliegue temporales
+*.tgz
+*.zip
+
+# 🔍 Seguridad (por si te olvidás alguna clave temporal)
+*.pem
+*.key
+*.crt
+*.pfx
