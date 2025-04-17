@@ -1,23 +1,20 @@
-# fly.toml app configuration file generated for zatbot on 2025-04-17T16:18:57Z
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# fly.toml
 
-app = 'zatbot'
-primary_region = 'ord'
+app = "zatbot"   # Debe coincidir con el nombre de tu app en Fly.io
 
 [build]
+  # puedes dejar vacío o especificar builder si quieres,
+  # normalmente no hace falta tocar nada aquí.
 
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = 'stop'
-  auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+# Define cómo Fly expone tu servidor
+[[services]]
+  internal_port = 5000   # ⇦ ESTE debe coincidir con tu PORT en index.js
+  protocol     = "tcp"
 
-[[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
-  memory_mb = 1024
+  [[services.ports]]
+    handlers = ["http"]
+    port     = 80        # Fly.io escucha en el 80 y lo redirige al 5000
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port     = 443       # Para HTTPS si lo necesitas
