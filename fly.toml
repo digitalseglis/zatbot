@@ -1,20 +1,19 @@
 # fly.toml
 
-app = "zatbot"   # Debe coincidir con el nombre de tu app en Fly.io
+app = "zatbot"    # Asegúrate de usar el nombre de tu app en Fly.io
 
 [build]
-  # puedes dejar vacío o especificar builder si quieres,
-  # normalmente no hace falta tocar nada aquí.
+  # puedes dejarlo vacío
 
-# Define cómo Fly expone tu servidor
 [[services]]
-  internal_port = 5000   # ⇦ ESTE debe coincidir con tu PORT en index.js
+  # Debe coincidir con el puerto de tu index.js (3000)
+  internal_port = 3000
   protocol     = "tcp"
 
   [[services.ports]]
     handlers = ["http"]
-    port     = 80        # Fly.io escucha en el 80 y lo redirige al 5000
+    port     = 80
 
   [[services.ports]]
     handlers = ["tls", "http"]
-    port     = 443       # Para HTTPS si lo necesitas
+    port     = 443
