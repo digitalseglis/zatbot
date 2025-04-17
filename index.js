@@ -1,33 +1,35 @@
 // index.js
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const express = require('express');
-const cors = require('cors');
-const qrcode = require('qrcode');
+const express  = require('express');
+const cors     = require('cors');
+const qrcode   = require('qrcode');
+const path     = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 1) Middlewares
+// ——— Estado & Config ———
+const TOKEN_SIMULADO = 'MI_TOKEN_ZAPBOT';
+const INSTANCE_ID    = 'zapbot_' + Math.floor(Math.random()*10000);
+let qrCodeData       = '';
+let isReady          = false;
+
+// ——— Middlewares ———
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));  // Si tienes un HTML en /public
+// Sirve todo lo que pongas en /public (index.html, css, js, img…)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// 2) Estado interno
-const TOKEN_ZAPBOT = process.env.TOKEN_ZAPBOT || 'MI_TOKEN_ZAPBOT';
-const INSTANCE_ID   = "zapbot_" + Math.floor(Math.random()*10000);
-let qrCodeData = '';
-let isReady    = false;
-
-// 3) Inicializar cliente de WhatsApp
+// ——— WhatsApp Client ———
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: { headless: true, args: ['--no-sandbox'] }
 });
 
 client.on('qr', async qr => {
-  isReady     = false;
-  qrCodeData  = await qrcode.toDataURL(qr);
-  console.log('📲 QR generado — escanea en /auth');
+  isReady    = false;
+  qrCodeData = await qrcode.toDataURL(qr);
+  console.log('📲 QR generado – escanear en /auth');
 });
 
 client.on('ready', () => {
@@ -36,12 +38,14 @@ client.on('ready', () => {
   console.log('✅ WhatsApp conectado');
 });
 
-// 4) Redirigir la raíz a /auth para no ver “Cannot GET /”
+// ——— Rutas ———
+
+// 1) Raíz: sirve public/index.html
 app.get('/', (req, res) => {
-  res.redirect('/auth');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 5) Endpoint /auth devuelve el QR, token y estado
+// 2) /auth: devuelve token, instancia, QR y estado
 app.get('/auth', (req, res) => {
   res.json({
     token:    TOKEN_SIMULADO,
@@ -51,14 +55,13 @@ app.get('/auth', (req, res) => {
   });
 });
 
-
-// 6) Función que maneja envíos de mensajes
+// 3) Función para /send
 async function handleSend(req, res) {
-  const token   = req.query.token  || req.body.token;
-  const to      = req.query.to     || req.body.to;
-  const message = req.query.body   || req.body.body;
+  const token   = req.query.token || req.body.token;
+  const to      = req.query.to    || req.body.to;
+  const message = req.query.body  || req.body.body;
 
-  if (token !== TOKEN_ZAPBOT) {
+  if (token !== TOKEN_SIMULADO) {
     return res.status(401).json({ error: 'Token inválido' });
   }
   if (!to || !message) {
@@ -71,20 +74,24 @@ async function handleSend(req, res) {
   const chatId = to.replace(/\D/g, '') + '@c.us';
   try {
     await client.sendMessage(chatId, message);
-    res.json({ success: true });
+    return res.json({ success: true });
   } catch (err) {
     console.error('Error enviando mensaje:', err);
-    res.status(500).json({ error: 'No pudo enviarse' });
+    return res.status(500).json({ error: 'No pudo enviarse el mensaje' });
   }
 }
 
-// 7) Rutas GET y POST para /send
-app.get('/send',  handleSend);
+// 4) /send: GET y POST
+app.get('/send', handleSend);
 app.post('/send', handleSend);
 
-// 8) Arrancar el servidor
+// 5) Cualquier otra ruta → 404 JSON
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
+// ——— Arrancar servidor & cliente ———
 app.listen(port, '0.0.0.0', () => {
   console.log(`🌐 Servidor activo en puerto ${port}`);
 });
-
 client.initialize();
