@@ -6,6 +6,19 @@ app = "zatbot"
   internal_port = 3000
   protocol      = "tcp"
 
+[[services.checks]]
+  # Usa el mismo nombre del puerto app que ya tienes:
+  port = "app"
+  # Cada cuánto tiempo Fly hará el ping:
+  interval = "15s"
+  # Tiempo de espera para que la petición responda
+  timeout = "2s"
+  # Un grace period para el primer arranque tras deploy
+  grace_period = "10s"
+  # Qué método HTTP y ruta va a “pingear”
+  method = "get"
+  path = "/auth"
+
   [[services.ports]]
     handlers = ["http"]
     port     = 80
