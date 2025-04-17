@@ -14,6 +14,7 @@ app.use(express.static('public'));  // Si tienes un HTML en /public
 
 // 2) Estado interno
 const TOKEN_ZAPBOT = process.env.TOKEN_ZAPBOT || 'MI_TOKEN_ZAPBOT';
+const INSTANCE_ID   = "zapbot_" + Math.floor(Math.random()*10000);
 let qrCodeData = '';
 let isReady    = false;
 
